@@ -1,4 +1,4 @@
-from src.menu import menu
+from src.menu.menu import menu
 
 def main():
     option = menu()
