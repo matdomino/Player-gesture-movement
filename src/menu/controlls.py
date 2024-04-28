@@ -19,12 +19,19 @@ def controlls_menu(controlls_gui, menu_gui, root):
     def close_controlls_cb():
         menu_gui.open_menu(controlls, menu_gui, root)
 
+    go_back = ctk.CTkButton(master=controlls, text="Go back", fg_color="transparent",
+                            command=close_controlls_cb)
+    go_back.place(relx=0.04, rely=0.04, anchor="nw")
+
     header_label = ctk.CTkLabel(master=controlls, text="Controls",
                                 font=ctk.CTkFont(size=24, weight="bold"))
-    header_label.place(relx=0.5, rely=0.25, anchor="n")
+    header_label.place(relx=0.1, rely=0.1, anchor="n")
 
-    settings = ctk.CTkButton(master=controlls, text="Go back to menu", fg_color="transparent",
-                            border_width=2, command=close_controlls_cb)
-    settings.place(relx=0.5, rely=0.55, anchor="center")
+    restore_settings = ctk.CTkButton(master=controlls, text="Restore default", fg_color="transparent",
+                            border_width=2)
+    restore_settings.place(relx=0.04, rely=0.96, anchor="sw")
+
+    save = ctk.CTkButton(master=controlls, text="Save")
+    save.place(relx=0.96, rely=0.96, anchor="se")
 
     root.mainloop()
