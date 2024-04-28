@@ -1,7 +1,7 @@
-from src.menu.menu import menu
+from src.menu.menu_window import menu_window
 
 def main():
-    option = menu()
+    option = menu_window()
 
     if option == "start":
         print("start")
