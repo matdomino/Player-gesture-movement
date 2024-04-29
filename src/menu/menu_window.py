@@ -1,10 +1,12 @@
 import customtkinter as ctk
-from .controlls import controlls_menu, ControllsGUI
+from .controlls import controlls_menu
 from .menu import menu
+from .config_handler import read_config
 
 class GUI:
-    def __init__(self):
+    def __init__(self, config):
         self.exit_option = None
+        self.config = config
 
     def start_program(self, root):
         self.exit_option = "start"
@@ -16,11 +18,11 @@ class GUI:
 
     def open_controlls(self, main, gui, root):
         main.destroy()
-        controlls_gui = ControllsGUI()
-        controlls_menu(controlls_gui, gui, root)
+        controlls_menu(gui, root)
 
 def menu_window():
-    gui = GUI()
+    config = read_config()
+    gui = GUI(config)
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme("blue")
     root = ctk.CTk()
