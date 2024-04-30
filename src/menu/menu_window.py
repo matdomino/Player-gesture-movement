@@ -27,6 +27,7 @@ def menu_window():
     ctk.set_default_color_theme("blue")
     root = ctk.CTk()
     root.geometry("600x400")
+    root.resizable(width=False, height=False)
 
     menu(gui, root)
 

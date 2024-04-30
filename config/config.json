@@ -1,5 +1,6 @@
 {
-    "walk": "test",
-    "use": "e",
-    "jump": "space-bar"
+    "walk": "s",
+    "use": "Unbind",
+    "jump": "Unbind",
+    "null": "Unbind"
 }
