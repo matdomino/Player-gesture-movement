@@ -1,10 +1,11 @@
 from src.menu.menu_window import menu_window
+from src.app.pose_detection import pose_detection
 
 def main():
     option = menu_window()
 
     if option == "start":
-        print("start")
+        pose_detection()
     else:
         return
 
