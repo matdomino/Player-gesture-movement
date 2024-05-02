@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+from calculate_cases import is_right_hand_active, is_left_hand_active, is_walking
 
 def pose_detection():
     mp_drawing = mp.solutions.drawing_utils
@@ -19,6 +20,16 @@ def pose_detection():
             
             try:
                 landmarks = results.pose_landmarks.landmark
+
+                # if is_right_hand_active(landmarks[16], landmarks[23]):
+                #     print("PRAWA AKTYWNA")
+
+                if is_left_hand_active(landmarks[15], landmarks[24]):
+                    print("LEWA ATYWNA")
+
+                # if is_walking:
+                #     print("IDZIESZ")
+
             except:
                 pass
             
@@ -32,3 +43,6 @@ def pose_detection():
 
     cap.release()
     cv2.destroyAllWindows()
+
+
+pose_detection()
