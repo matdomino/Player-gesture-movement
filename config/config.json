@@ -1,6 +1,5 @@
 {
     "walk": "s",
-    "use": "Unbind",
-    "jump": "Unbind",
-    "null": "Unbind"
+    "use": "s",
+    "jump": "s"
 }

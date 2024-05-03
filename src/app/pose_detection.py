@@ -1,6 +1,6 @@
 import cv2
 import mediapipe as mp
-from calculate_cases import is_right_hand_active, is_left_hand_active, is_walking
+from .calculate_cases import is_right_hand_active, is_left_hand_active, is_walking
 
 def pose_detection():
     mp_drawing = mp.solutions.drawing_utils
@@ -45,4 +45,4 @@ def pose_detection():
     cv2.destroyAllWindows()
 
 
-pose_detection()
+# pose_detection()

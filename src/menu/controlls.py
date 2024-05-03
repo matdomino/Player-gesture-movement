@@ -43,16 +43,9 @@ def controlls_menu(menu_gui, root):
         menu_gui.config = read_config()
         close_controlls_cb()
 
-    def find_config_key(config, ignoreKey, val):
-        for key, value in config.items():
-            if value == val and key != ignoreKey:
-                return key
-
-    # TODO - do poprawy w przyszlosci na razie do dalszej czesci dziala
     def change_bind(item, value):
-        for button in controls_list.button_list:
-            
-            if button.cget("text") == value:
+        for button, label in zip(controls_list.button_list, controls_list.label_list):
+            if button.cget("text") == value and label.cget("text") == item:
                 button.configure(fg_color="#144870")
                 button.configure(text="Enter a key: ")
 
@@ -64,15 +57,6 @@ def controlls_menu(menu_gui, root):
                     button.configure(fg_color="transparent")
                     new_config[item] = key_name
 
-                    for other_button in controls_list.button_list:
-                        if other_button != button:
-                            if other_button.cget("text") == key_name:
-                                other_key = find_config_key(new_config, item, key_name)
-
-                                other_button.configure(text="Unbind")
-                                other_button.configure(command=lambda: controls_list.command(item, "Unbind"))
-                                new_config[other_key] = "Unbind"
-
                 break
 
     go_back = ctk.CTkButton(master=controlls, text="← Go back", fg_color="transparent",
@@ -83,14 +67,17 @@ def controlls_menu(menu_gui, root):
                                 font=ctk.CTkFont(size=24, weight="bold"))
     header_label.place(relx=0.04, rely=0.15, anchor="nw")
 
-    controls_list = ScrollableLabelButtonFrame(master=controlls, width=537, height=235, command=change_bind, corner_radius=0, fg_color="transparent")
+    controls_list = ScrollableLabelButtonFrame(master=controlls, width=537, height=235,
+                                                command=change_bind, corner_radius=0,
+                                                fg_color="transparent")
     controls_list.grid(row=0, column=2, padx=24, pady=100, sticky="nsew")
 
     for key, val in new_config.items():
         controls_list.add_item(key, val)
 
-    restore_settings = ctk.CTkButton(master=controlls, text="Restore default", fg_color="transparent",
-                            border_width=2, command=restore_controls)
+    restore_settings = ctk.CTkButton(master=controlls, text="Restore default",
+                                    fg_color="transparent", border_width=2,
+                                    command=restore_controls)
     restore_settings.place(relx=0.04, rely=0.96, anchor="sw")
 
     save = ctk.CTkButton(master=controlls, text="Save", command=save_current_config)
