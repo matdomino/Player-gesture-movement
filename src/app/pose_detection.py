@@ -21,6 +21,15 @@ def pose_detection():
             try:
                 landmarks = results.pose_landmarks.landmark
 
+                # DATASET:
+                # "PALM" - ruszanie kursorem
+                # "ONE" - pojedyncze klikniecie lewym
+                # "PEACE" - przytrzymanie lewego
+                # "three" - nacisniecie prawego
+                # "four" - przytrzymanie prawego
+
+                # ZROBIC ZE PRZECHYLENIE W LEWO LUB W PRAWO TO POJSCIE W TA STRONE
+
                 # if is_right_hand_active(landmarks[16], landmarks[23]):
                 #     print("PRAWA AKTYWNA")
 
