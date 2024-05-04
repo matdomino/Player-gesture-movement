@@ -1,8 +1,13 @@
 import cv2
 import mediapipe as mp
+from .config_handler import read_config
 from .calculate_cases import is_right_hand_active, is_left_hand_active, is_walking
+from .input_operations import hold_key, single_key_press
 
 def pose_detection():
+    binds_config = read_config()
+    print(binds_config)
+
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
     cap = cv2.VideoCapture(0)
@@ -20,6 +25,15 @@ def pose_detection():
             
             try:
                 landmarks = results.pose_landmarks.landmark
+
+                # inicjalizatory do kursora
+                is_left_mb_pressed = False
+                is_right_mb_pressed = False
+
+                is_left_mb_pressed = True
+
+                single_key_press("a")
+
 
                 # DATASET:
                 # "PALM" - ruszanie kursorem
