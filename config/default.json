@@ -1,15 +1,14 @@
 {
     "Walk": "w",
-    "Sprint": "shift",
     "Go left": "a",
     "Go right": "d",
     "Jump": "space",
-    "Call": "e",
-    "Dislike": "g",
-    "Like": "f",
-    "Rock": "x",
-    "Ok": "tab",
-    "Stop": "esc",
-    "Fist": "1",
-    "Two up": "2"
+    "call": "e",
+    "dislike": "g",
+    "like": "f",
+    "rock": "x",
+    "ok": "tab",
+    "stop": "esc",
+    "fist": "1",
+    "two_up": "2"
 }

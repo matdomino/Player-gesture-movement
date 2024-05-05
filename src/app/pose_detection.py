@@ -10,8 +10,10 @@ def pose_detection():
 
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
+    mp_hands = mp.solutions.hands
     cap = cv2.VideoCapture(0)
-    with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+
+    with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose, mp_hands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_hands=2) as hands:
         while cap.isOpened():
             ret, frame = cap.read()
             
@@ -19,20 +21,30 @@ def pose_detection():
             image.flags.writeable = False
 
             results = pose.process(image)
+            results_hands = hands.process(image)
         
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             
             try:
                 landmarks = results.pose_landmarks.landmark
+                landmarks_hands = results_hands.multi_hand_landmarks
+
+                if len(landmarks_hands) > 1:
+                    one_hand = landmarks_hands[0]
+                    second_hand = landmarks_hands[1]
+
+                    print("PRAWA")
+                    print(one_hand)
+
 
                 # inicjalizatory do kursora
-                is_left_mb_pressed = False
-                is_right_mb_pressed = False
+                # is_left_mb_pressed = False
+                # is_right_mb_pressed = False
 
-                is_left_mb_pressed = True
+                # is_left_mb_pressed = True
 
-                single_key_press("a")
+                # single_key_press("a")
 
 
                 # DATASET:
@@ -47,8 +59,8 @@ def pose_detection():
                 # if is_right_hand_active(landmarks[16], landmarks[23]):
                 #     print("PRAWA AKTYWNA")
 
-                if is_left_hand_active(landmarks[15], landmarks[24]):
-                    print("LEWA ATYWNA")
+                # if is_left_hand_active(landmarks[15], landmarks[24]):
+                #     print("LEWA ATYWNA")
 
                 # if is_walking:
                 #     print("IDZIESZ")
@@ -57,6 +69,9 @@ def pose_detection():
                 pass
             
             mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)               
+            if results_hands.multi_hand_landmarks:
+                for hand in results_hands.multi_hand_landmarks:
+                    mp_drawing.draw_landmarks(image, hand, mp_hands.HAND_CONNECTIONS)
             
             cv2.imshow('Webcam Player Controler', image)
 
@@ -68,4 +83,4 @@ def pose_detection():
     cv2.destroyAllWindows()
 
 
-# pose_detection()
+pose_detection()
