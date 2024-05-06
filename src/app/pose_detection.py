@@ -1,17 +1,19 @@
 import cv2
 import mediapipe as mp
 from .config_handler import read_config
-from .calculate_cases import is_right_hand_active, is_left_hand_active, is_walking, is_leaning_right, is_leaning_left
+from .calculate_cases import calculate_joint_angle, is_right_hand_active, is_left_hand_active, is_walking, is_leaning_right, is_leaning_left
 from .input_operations import hold_key, release_key, single_key_press
 
 def pose_detection():
     binds_config = read_config()
-    print(binds_config)
 
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
     mp_hands = mp.solutions.hands
     cap = cv2.VideoCapture(0)
+
+    #SINGLE USE STATES
+    is_jumping = False
 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose, mp_hands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_hands=2) as hands:
         while cap.isOpened():
@@ -59,14 +61,31 @@ def pose_detection():
 
                     # TU DODAC FUNKCJE KLAWISZOWE
 
-                # if is_walking:
-                #     print("IDZIESZ")
+                # CHODZENIE
+                if (calculate_joint_angle(landmarks[12], landmarks[24], landmarks[26]) < 140
+                    or calculate_joint_angle(landmarks[11], landmarks[23], landmarks[25]) < 140):
 
+                    hold_key(binds_config["Walk"])
+                else:
+                    release_key(binds_config["Walk"])
+
+                # SKAKANIE
+                if (calculate_joint_angle(landmarks[12], landmarks[24], landmarks[26]) < 90
+                    or calculate_joint_angle(landmarks[11], landmarks[23], landmarks[25]) < 90):
+
+                    if not is_jumping:
+                        single_key_press(binds_config["Jump"], is_jumping)
+                        is_jumping = True
+                else:
+                    is_jumping = False
+
+                # SKLON PRAWO
                 if is_leaning_right(landmarks[0], landmarks[24]):
                     hold_key(binds_config["Go right"])
                 else:
                     release_key(binds_config["Go right"])
 
+                # SKLON LEWO
                 if is_leaning_left(landmarks[0], landmarks[23]):
                     hold_key(binds_config["Go left"])
                 else:

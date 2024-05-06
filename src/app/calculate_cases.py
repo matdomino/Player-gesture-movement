@@ -1,5 +1,21 @@
-def calculate_joint_angle(outer_joint_1, searched_joint, outer_joint2):
-    ...
+import numpy as np
+
+def calculate_joint_angle(outer_joint_1, searched_joint, outer_joint_2):
+    outer_joint_1 = np.array([outer_joint_1.x, outer_joint_1.y, outer_joint_1.z])
+    searched_joint = np.array([searched_joint.x, searched_joint.y, searched_joint.z])
+    outer_joint_2 = np.array([outer_joint_2.x, outer_joint_2.y, outer_joint_2.z])
+
+    vector_1 = outer_joint_1 - searched_joint
+    vector_2 = outer_joint_2 - searched_joint
+
+    vector_1 /= np.linalg.norm(vector_1)
+    vector_2 /= np.linalg.norm(vector_2)
+
+    dot_product = np.dot(vector_1, vector_2)
+    angle = np.arccos(dot_product)
+
+    return np.degrees(angle)
+
 
 # Prawa reka aktywna jak prawy nadgarstek jest powyzej bioder i po prawej stronie głowy
 def is_right_hand_active(right_wrist, left_hip, nose):
