@@ -1,13 +1,16 @@
-import keyboard
+from pyautogui import keyUp, keyDown, hotkey
 import mouse
-import time
 
 def hold_key(key):
-    keyboard.press_and_release(key)
+    keyDown(key)
+
+def release_key(key):
+    keyUp(key)
 
 def single_key_press(key, is_pressed):
     if not is_pressed:
-        keyboard.press_and_release(key)
+        keyDown(key)
+        keyUp(key)
 
 def hold_mb(mb, release):
     if not release:
