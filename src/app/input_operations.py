@@ -39,18 +39,3 @@ def move_mouse(mouseobj, curr_x, curr_y, old_x, old_y, speed):
             mouseobj.move(0, -10 * speed)
         elif curr_y > old_y:
             mouseobj.move(0, 10 * speed)
-
-# is_left_mb_pressed = False
-# is_right_mb_pressed = False
-# release_left_mb = False
-# release_right_mb = False
-
-# time.sleep(2)
-
-# hold_mb("left", release_left_mb)
-
-# time.sleep(2)
-
-# release_left_mb = True
-
-# hold_mb("left", release_left_mb)

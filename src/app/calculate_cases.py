@@ -48,8 +48,54 @@ def is_leaning_left(nose, left_hip):
 
     return False
 
+def index_finger_up(hand):
+    status = True
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
+        status = False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) < 120:
+        status = False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) < 120:
+        status = False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) < 120:
+        status = False
 
+    return status
 
-# TODO Wymyslec jeszcze moze jak zrobic bieganie? jakies katy moze mniejsze miedzy stawami nog???
-# MOZE KAT W BIODRZE??????
+def peace_sign(hand):
+    status = True
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
+        status = False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) > 160:
+        status = False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) < 120:
+        status = False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) < 120:
+        status = False
 
+    return status
+
+def three_fingers_up(hand):
+    status = True
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
+        status = False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) > 160:
+        status = False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) > 160:
+        status = False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) < 120:
+        status = False
+
+    return status
+
+def four_fingers_up(hand):
+    status = True
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
+        status = False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) > 160:
+        status = False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) > 160:
+        status = False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) > 160:
+        status = False
+
+    return status
