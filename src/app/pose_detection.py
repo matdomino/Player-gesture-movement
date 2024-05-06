@@ -1,8 +1,9 @@
 import cv2
 import mediapipe as mp
+from pynput.mouse import Controller
 from .config_handler import read_config
 from .calculate_cases import calculate_joint_angle, is_right_hand_active, is_left_hand_active, is_walking, is_leaning_right, is_leaning_left
-from .input_operations import hold_key, release_key, single_key_press
+from .input_operations import hold_key, release_key, single_key_press, move_mouse
 
 def pose_detection():
     binds_config = read_config()
@@ -11,6 +12,12 @@ def pose_detection():
     mp_pose = mp.solutions.pose
     mp_hands = mp.solutions.hands
     cap = cv2.VideoCapture(0)
+
+    mouse = Controller()
+
+    # CURSOR STATES
+    old_x = 0
+    old_y = 0
 
     #SINGLE USE STATES
     is_jumping = False
@@ -48,22 +55,19 @@ def pose_detection():
 
                 # ZROBIC ZE PRZECHYLENIE W LEWO LUB W PRAWO TO POJSCIE W TA STRONE
 
-                # if is_right_hand_active(landmarks[16], landmarks[24], landmarks[0]):
-                #     hold_key(binds_config["Walk"])
-                # else:
-                #     release_key(binds_config["Walk"])
+                if is_right_hand_active(landmarks[16], landmarks[24], landmarks[0]):
+                    move_mouse(mouse, landmarks[16].x, landmarks[16].y, old_x, old_y, 3)
 
-                #     hold_key(binds_config["Walk"])
-                # else:
-                #     release_key(binds_config["Walk"])
+                    old_x = landmarks[16].x
+                    old_y = landmarks[16].y
 
                 # if is_left_hand_active(landmarks[15], landmarks[23], landmarks[0]):
 
                     # TU DODAC FUNKCJE KLAWISZOWE
 
                 # CHODZENIE
-                if (calculate_joint_angle(landmarks[12], landmarks[24], landmarks[26]) < 140
-                    or calculate_joint_angle(landmarks[11], landmarks[23], landmarks[25]) < 140):
+                if (calculate_joint_angle(landmarks[12], landmarks[24], landmarks[26]) < 120
+                    or calculate_joint_angle(landmarks[11], landmarks[23], landmarks[25]) < 120):
 
                     hold_key(binds_config["Walk"])
                 else:
@@ -94,7 +98,7 @@ def pose_detection():
             except:
                 pass
 
-            mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)               
+            mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
             if results_hands.multi_hand_landmarks:
                 for hand in results_hands.multi_hand_landmarks:
                     mp_drawing.draw_landmarks(image, hand, mp_hands.HAND_CONNECTIONS)

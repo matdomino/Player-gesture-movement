@@ -1,4 +1,4 @@
-from pyautogui import keyUp, keyDown, hotkey
+from pyautogui import keyUp, keyDown
 import mouse
 
 def hold_key(key):
@@ -23,6 +23,22 @@ def single_mb_press(mb, status):
     if not status:
         mouse.click(button=mb)
         mouse.release(button=mb)
+
+def move_mouse(mouseobj, curr_x, curr_y, old_x, old_y, speed):
+    x_difference = abs(curr_x - old_x)
+    y_difference = abs(curr_y - old_y)
+
+    if x_difference > 0.01:
+        if curr_x < old_x:
+            mouseobj.move(10 * speed, 0)
+        elif curr_x > old_x:
+            mouseobj.move(-10 * speed, 0)
+
+    if y_difference > 0.01:
+        if curr_y < old_y:
+            mouseobj.move(0, -10 * speed)
+        elif curr_y > old_y:
+            mouseobj.move(0, 10 * speed)
 
 # is_left_mb_pressed = False
 # is_right_mb_pressed = False
