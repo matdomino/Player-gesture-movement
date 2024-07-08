@@ -13,6 +13,10 @@ def pose_detection():
     mp_hands = mp.solutions.hands
     cap = cv2.VideoCapture(0)
 
+
+    # USUNAC POZNIEJ
+    old_landmarks_hands = None
+
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose, mp_hands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_hands=2) as hands:
         while cap.isOpened():
             ret, frame = cap.read()
@@ -33,7 +37,11 @@ def pose_detection():
 
                 landmarks_hands = results_hands.multi_hand_landmarks
 
-                emulate_mouse(landmarks_hands)
+                # ZMIENIC POZNIEJ ZEBY NIE ZWRACALO
+                landmarks_tmp = emulate_mouse(landmarks_hands, old_landmarks_hands)
+
+                if landmarks_tmp != None:
+                    old_landmarks_hands = landmarks_tmp
 
                 # if is_left_hand_active(landmarks[15], landmarks[23], landmarks[0]):
 
