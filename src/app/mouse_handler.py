@@ -13,23 +13,7 @@ def move_mouse(coords, old_coords, sensitivity):
             moveRel(new_x, new_y)
 
 
-def emulate_mouse(landmarks, old_landmarks): # pozniej to w watku przechowywac
+def emulate_mouse(right_hand, old_landmarks): # pozniej to w watku przechowywac
+    move_mouse((right_hand.landmark[0].x, right_hand.landmark[0].y), old_landmarks, 50)
 
-    try:
-        if len(landmarks) > 1:
-            right_hand = landmarks[0]
-            left_hand = landmarks[1]
-
-            if right_hand.landmark[0].x > left_hand.landmark[0].x:
-                right_hand, left_hand = left_hand, right_hand
-
-            move_mouse((right_hand.landmark[0].x, right_hand.landmark[0].y), old_landmarks, 50)
-
-
-        else:
-            raise ValueError("Brak wykrytych dłoni")
-
-        return (right_hand.landmark[0].x, right_hand.landmark[0].y)
-
-    except:
-        pass
+    return (right_hand.landmark[0].x, right_hand.landmark[0].y)

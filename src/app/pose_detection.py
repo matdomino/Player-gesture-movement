@@ -31,74 +31,23 @@ def pose_detection():
             # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR) // Tylko wizualnie kamera ma dobre kolory - pytanie czy to potrzebne
 
             try:
+                landmarks_hands = results_hands.multi_hand_landmarks
                 landmarks_body = results.pose_landmarks.landmark
 
-                # emulate_keyboard(landmarks_body)
+                if len(landmarks_hands) > 1:
+                    right_hand = landmarks_hands[0]
+                    left_hand = landmarks_hands[1]
 
-                landmarks_hands = results_hands.multi_hand_landmarks
+                    if right_hand.landmark[0].x > left_hand.landmark[0].x:
+                        right_hand, left_hand = left_hand, right_hand
 
-                # ZMIENIC POZNIEJ ZEBY NIE ZWRACALO
-                landmarks_tmp = emulate_mouse(landmarks_hands, old_landmarks_hands)
+                    # ZMIENIC POZNIEJ ZEBY NIE ZWRACALO
+                    landmarks_tmp = emulate_mouse(right_hand, old_landmarks_hands)
 
-                if landmarks_tmp != None:
-                    old_landmarks_hands = landmarks_tmp
+                    # emulate_keyboard(landmarks_body, left_hand)
 
-                # if is_left_hand_active(landmarks[15], landmarks[23], landmarks[0]):
-
-                #     # Klawiatura
-                #     if (index_finger_up(left_hand)):
-                #         single_key_press(binds_config["l-index-up"], l_index)
-                #         l_index = True
-                #     else:
-                #         l_index = False
-
-                #     if (peace_sign(left_hand)):
-                #         single_key_press(binds_config["l-peace"], l_peace)
-                #         l_peace = True
-                #     else:
-                #         l_peace = False
-
-                #     if (three_fingers_up(left_hand)):
-                #         single_key_press(binds_config["l-three-up"], l_three)
-                #         l_three = True
-                #     else:
-                #         l_three = False
-
-                #     if (four_fingers_up(left_hand)):
-                #         single_key_press(binds_config["l-four-up"], l_four)
-                #         l_four = True
-                #     else:
-                #         l_four = False
-
-                # # CHODZENIE
-                # if (calculate_joint_angle(landmarks[12], landmarks[24], landmarks[26]) < 120
-                #     or calculate_joint_angle(landmarks[11], landmarks[23], landmarks[25]) < 120):
-
-                #     hold_key(binds_config["Walk"])
-                # else:
-                #     release_key(binds_config["Walk"])
-
-                # # SKAKANIE
-                # if (calculate_joint_angle(landmarks[12], landmarks[24], landmarks[26]) < 90
-                #     or calculate_joint_angle(landmarks[11], landmarks[23], landmarks[25]) < 90):
-
-                #     if not is_jumping:
-                #         single_key_press(binds_config["Jump"], is_jumping)
-                #         is_jumping = True
-                # else:
-                #     is_jumping = False
-
-                # # SKLON PRAWO
-                # if is_leaning_right(landmarks[0], landmarks[24]):
-                #     hold_key(binds_config["Go right"])
-                # else:
-                #     release_key(binds_config["Go right"])
-
-                # # SKLON LEWO
-                # if is_leaning_left(landmarks[0], landmarks[23]):
-                #     hold_key(binds_config["Go left"])
-                # else:
-                #     release_key(binds_config["Go left"])
+                    if landmarks_tmp != None:
+                        old_landmarks_hands = landmarks_tmp
 
             except:
                 pass
