@@ -1,5 +1,4 @@
-from pyautogui import keyUp, keyDown
-import mouse
+from pyautogui import keyUp, keyDown, click, mouseDown, mouseUp
 
 def hold_key(key):
     keyDown(key)
@@ -14,15 +13,13 @@ def single_key_press(key, is_pressed):
 
 def hold_mb(mb, release):
     if not release:
-        mouse.press(button=mb)
+        mouseDown(button=mb)
     else:
-        mouse.release(button=mb)
-
+        mouseUp(button=mb)
 
 def single_mb_press(mb, status):
     if not status:
-        mouse.click(button=mb)
-        mouse.release(button=mb)
+        click(button=mb)
 
 def move_mouse(mouseobj, curr_x, curr_y, old_x, old_y, speed):
     x_difference = abs(curr_x - old_x)

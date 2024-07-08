@@ -49,53 +49,63 @@ def is_leaning_left(nose, left_hip):
     return False
 
 def index_finger_up(hand):
-    status = True
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
-        status = False
+        return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) < 120:
-        status = False
+        return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) < 120:
-        status = False
+        return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) < 120:
-        status = False
+        return False
 
-    return status
+    return True
 
 def peace_sign(hand):
-    status = True
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
-        status = False
+        return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) > 160:
-        status = False
+        return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) < 120:
-        status = False
+        return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) < 120:
-        status = False
+        return False
 
-    return status
+    return True
 
 def three_fingers_up(hand):
-    status = True
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
-        status = False
+        return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) > 160:
-        status = False
+        return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) > 160:
-        status = False
+        return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) < 120:
-        status = False
+        return False
 
-    return status
+    return True
 
 def four_fingers_up(hand):
-    status = True
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
-        status = False
+        return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) > 160:
-        status = False
+        return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) > 160:
-        status = False
+        return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) > 160:
-        status = False
+        return False
 
-    return status
+    return True
+
+def open_palm(hand):
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[1], hand.landmark[4]) > 140:
+        return False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
+        return False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) > 160:
+        return False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) > 160:
+        return False
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) > 160:
+        return False
+
+    return True
