@@ -1,9 +1,17 @@
 import cv2
 import mediapipe as mp
+import threading
+import queue
 from .config_handler import read_config
-from .mouse_handler import emulate_mouse
+from .mouse_handler import run_mouse_emulation
+
+mouse_landmarks_queue = queue.Queue()
+exit_event = threading.Event()
 
 def pose_detection():
+    global mouse_landmarks_queue
+    global exit_event
+
     binds_config = read_config()
 
     mp_drawing = mp.solutions.drawing_utils
@@ -11,12 +19,14 @@ def pose_detection():
     mp_hands = mp.solutions.hands
     cap = cv2.VideoCapture(0)
 
+    t_mouse = threading.Thread(target=run_mouse_emulation, args=(mouse_landmarks_queue, exit_event))
+
+    t_mouse.start()
 
     # USUNAC POZNIEJ
-    old_landmarks_hands = None
 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose, mp_hands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_hands=2) as hands:
-        while cap.isOpened():
+        while cap.isOpened() and not exit_event.is_set():
             ret, frame = cap.read()
 
             image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -39,13 +49,10 @@ def pose_detection():
                     if right_hand.landmark[0].x > left_hand.landmark[0].x:
                         right_hand, left_hand = left_hand, right_hand
 
-                    # ZMIENIC POZNIEJ ZEBY NIE ZWRACALO
-                    landmarks_tmp = emulate_mouse(right_hand, old_landmarks_hands)
+                    # TUTAJ DAC DODAWANIE DO KOLEJKI WATKOW
+                    mouse_landmarks_queue.put(right_hand)
 
                     # emulate_keyboard(landmarks_body, left_hand)
-
-                    if landmarks_tmp != None:
-                        old_landmarks_hands = landmarks_tmp
 
             except:
                 pass
@@ -59,7 +66,9 @@ def pose_detection():
 
             cv2.waitKey(1)
             if cv2.getWindowProperty('Webcam Player Controler', cv2.WND_PROP_VISIBLE) < 1:
+                exit_event.set()
                 break
 
     cap.release()
     cv2.destroyAllWindows()
+    t_mouse.join()
