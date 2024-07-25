@@ -97,7 +97,7 @@ def four_fingers_up(hand):
     return True
 
 def open_palm(hand):
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[1], hand.landmark[4]) > 140:
+    if not calculate_joint_angle(hand.landmark[0], hand.landmark[1], hand.landmark[4]) > 160:
         return False
     if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
         return False

@@ -6,9 +6,9 @@ from .calculate_cases import index_finger_up, peace_sign, three_fingers_up, four
 def move_mouse(coords, old_coords, controller, sensitivity):
     if old_coords != None:
         diff = (old_coords[0] - coords[0], old_coords[1] - coords[1])
-
         new_x = diff[0]
         new_y = diff[1]
+
         if abs(new_x) > 0.005 or abs(new_y) > 0.005:
             new_x = int(new_x * 100 * sensitivity)
             new_y = int(new_y * 100 * sensitivity * -1)
@@ -19,7 +19,7 @@ def release_last(last_option, mouse_controller):
     if last_option == "peace_sign":
         release_mb(Button.left, mouse_controller)
         return
-    
+
     if last_option == "four_fingers_up":
         release_mb(Button.right, mouse_controller)
         return
@@ -31,6 +31,15 @@ def emulate_mouse(right_hand, old_landmarks, mouse_controller, last_mouse_option
         move_mouse((right_hand.landmark[0].x, right_hand.landmark[0].y), old_landmarks, mouse_controller, 50)
 
         return (right_hand.landmark[0].x, right_hand.landmark[0].y), None
+
+    if four_fingers_up(right_hand): # TRZYMANIE PRAWEGO PRZCISKU MYSZKI
+        if last_mouse_option == "peace_sign":
+            release_mb(Button.left, mouse_controller)
+
+        move_mouse((right_hand.landmark[0].x, right_hand.landmark[0].y), old_landmarks, mouse_controller, 50)
+        hold_mb(Button.right, mouse_controller, last_mouse_option=="four_fingers_up")
+
+        return (right_hand.landmark[0].x, right_hand.landmark[0].y), "four_fingers_up"
 
     if index_finger_up(right_hand): # POJEDYNCZO LEWY
         release_last(last_mouse_option, mouse_controller)
@@ -51,22 +60,11 @@ def emulate_mouse(right_hand, old_landmarks, mouse_controller, last_mouse_option
         single_mb_press(Button.right, mouse_controller, last_mouse_option == "three_fingers_up")
         return (right_hand.landmark[0].x, right_hand.landmark[0].y), "three_fingers_up"
 
-    if four_fingers_up(right_hand): # PRZYTRZYMANIE PRAWY
-        if last_mouse_option == "peace_sign":
-            release_mb(Button.right, mouse_controller)
-
-        move_mouse((right_hand.landmark[0].x, right_hand.landmark[0].y), old_landmarks, mouse_controller, 50)
-        hold_mb(Button.right, mouse_controller, last_mouse_option=="four_fingers_up")
-
-        return (right_hand.landmark[0].x, right_hand.landmark[0].y), "four_fingers_up"
-
     return None, last_mouse_option
 
 def run_mouse_emulation(mouse_landmarks_queue, exit_event):
     mouse_controller = Controller()
-
     old_landmarks = None
-
     last_mouse_option = None
 
     while not exit_event.is_set():
@@ -74,8 +72,11 @@ def run_mouse_emulation(mouse_landmarks_queue, exit_event):
             landmarks = mouse_landmarks_queue.get(timeout=1)
             landmarks_tmp, last_mouse_option = emulate_mouse(landmarks, old_landmarks, mouse_controller, last_mouse_option)
 
-            if landmarks_tmp != None:
+            if landmarks_tmp is not None:
                 old_landmarks = landmarks_tmp
 
         except queue.Empty:
             pass
+
+    release_mb(Button.left, mouse_controller)
+    release_mb(Button.right, mouse_controller)
