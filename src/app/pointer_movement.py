@@ -21,6 +21,7 @@ def pointer_movement_handler(positions_queue, exit_event):
     iteration_ratio = 0
 
     while not exit_event.is_set():
+        print("test")
         try:
             if segments_queue.qsize() > queue_limit:
                 remove_from_queue(segments_queue, frame_rate)
@@ -35,6 +36,7 @@ def pointer_movement_handler(positions_queue, exit_event):
 
             if positions_queue.qsize() > 0:
                 # DOCELOWE X I Y
+
                 x_dest, y_dest = positions_queue.get()
 
                 # DODAC TUTAJ DZIELENIE NA SEGMENTY
@@ -45,11 +47,38 @@ def pointer_movement_handler(positions_queue, exit_event):
 
                 # ZMIENIC TU LICZENIE SEGMENTOW - DODAC ZEBY DOLICZALO JESLI
                 # iteration_ratio wieksze od 0
-                x_segment = x_dest // 10 if x_dest >= 10 else 1
-                y_segment = y_dest // 10 if y_dest >= 10 else 1
 
-                for _ in range(9 - iteration_ratio):
-                    
+                x_segment = x_dest // (10 - iteration_ratio) if x_dest >= (10 - iteration_ratio) else 1
+
+                y_segment = y_dest // (10 - iteration_ratio) if y_dest >= (10 - iteration_ratio) else 1
+
+                for _ in range(10 - iteration_ratio):
+                    if x_dest >= x_segment and y_dest >= y_segment:
+                        segments_queue.put((x_segment, y_segment))
+
+                        x_dest -= x_segment
+                        y_dest -= y_segment
+                        continue
+
+                    if x_dest >= x_segment and y_dest <= y_segment:
+                        if y_dest > 0:
+                            segments_queue.put((x_segment, y_dest))
+                        else:
+                            segments_queue.put((x_segment, 0))
+
+                        x_dest -= x_segment
+                        y_dest = 0
+                        continue
+
+                    if x_dest <= x_segment and y_dest >= y_segment:
+                        if x_dest > 0:
+                            segments_queue.put((x_dest, y_segment))
+                        else:
+                            segments_queue.put((0, y_segment))
+
+                        y_dest -= y_segment
+                        x_dest = 0
+                        continue
 
             next_position = segments_queue.get()
             mouse_controller.move(next_position[0], [1])

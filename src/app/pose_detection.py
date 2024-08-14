@@ -4,13 +4,18 @@ import threading
 import queue
 from .config_handler import read_config
 from .mouse_handler import run_mouse_emulation
+from .pointer_movement import pointer_movement_handler
 
 mouse_landmarks_queue = queue.Queue()
+pointer_queue = queue.Queue()
 exit_event = threading.Event()
+positions_queue = queue.Queue()
 
 def pose_detection():
     global mouse_landmarks_queue
     global exit_event
+    global positions_queue
+    
 
     binds_config = read_config()
 
@@ -19,9 +24,11 @@ def pose_detection():
     mp_hands = mp.solutions.hands
     cap = cv2.VideoCapture(0)
 
-    t_mouse = threading.Thread(target=run_mouse_emulation, args=(mouse_landmarks_queue, exit_event))
+    t_mouse = threading.Thread(target=run_mouse_emulation, args=(mouse_landmarks_queue, positions_queue, exit_event))
+    t_pointer = threading.Thread(target=pointer_movement_handler, args=(positions_queue, exit_event))
 
     t_mouse.start()
+    t_pointer.start()
 
     # USUNAC POZNIEJ
 
@@ -72,3 +79,4 @@ def pose_detection():
     cap.release()
     cv2.destroyAllWindows()
     t_mouse.join()
+    t_pointer.join()
