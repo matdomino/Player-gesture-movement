@@ -1,5 +1,6 @@
 import queue
 import pygame
+import time
 from pynput.mouse import Controller
 
 
@@ -7,6 +8,12 @@ def remove_from_queue(queue, amount):
     for _ in range(amount):
         if not queue.empty():
             queue.get()
+
+##############################################
+# PRZEROBIC TA PETLE - ZA DUZY BUSY WAITING - BEZ OPOZNIENIA NA POCZATKU PETLI
+# CALY PROGRAM ZWALNIA PRZEZ TA FUNKCJE
+# PLUS POPRAWIC SPOSOB W JAKI SA OBLICZANE SEGMENTY - UPROSCIC I DODAC DLA MINUSOWYCH WSPOLRZEDNYCH
+##############################################
 
 def pointer_movement_handler(positions_queue, exit_event):
     # dodac to pozniej do konfiguracji w menu
@@ -21,7 +28,7 @@ def pointer_movement_handler(positions_queue, exit_event):
     iteration_ratio = 0
 
     while not exit_event.is_set():
-        print("test")
+        time.sleep(0.001)
         try:
             if segments_queue.qsize() > queue_limit:
                 remove_from_queue(segments_queue, frame_rate)
@@ -80,8 +87,8 @@ def pointer_movement_handler(positions_queue, exit_event):
                         x_dest = 0
                         continue
 
-            next_position = segments_queue.get()
-            mouse_controller.move(next_position[0], [1])
+            next_position = segments_queue.get(block=False)
+            mouse_controller.move(next_position[0], next_position[1])
             pygame.time.delay(time_interval)
 
         except queue.Empty:
