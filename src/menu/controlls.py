@@ -59,6 +59,10 @@ def controlls_menu(menu_gui, root):
 
                 break
 
+    def slider_event(value):
+        normalized_value = float(value) / 100
+        sensitivity_val_label.configure(text=f"{normalized_value:.2f}")
+
     go_back = ctk.CTkButton(master=controlls, text="← Go back", fg_color="transparent",
                             border_width=2, command=close_controlls_cb)
     go_back.place(relx=0.04, rely=0.04, anchor="nw")
@@ -74,6 +78,15 @@ def controlls_menu(menu_gui, root):
 
     for key, val in new_config.items():
         controls_list.add_item(key, val)
+
+    sensitivity_label = ctk.CTkLabel(master=controls_list, text="Mouse Sensitivity", anchor="w")
+    sensitivity_label.grid(row=len(controls_list.label_list) + 1, column=0, pady=(10, 0), padx=10, sticky="w")
+
+    sensitivity_slider = ctk.CTkSlider(master=controls_list, from_=0, to=100, command=slider_event, width=140)
+    sensitivity_slider.grid(row=len(controls_list.label_list) + 1, column=1, pady=(10, 0), padx=(5, 0), sticky="ew")
+
+    sensitivity_val_label = ctk.CTkLabel(master=controls_list, text=f"{(sensitivity_slider.get() / 100):.2f}", anchor="w")
+    sensitivity_val_label.grid(row=len(controls_list.label_list) + 1, column=2, pady=(10, 0), padx=(5, 10), sticky="w")
 
     restore_settings = ctk.CTkButton(master=controlls, text="Restore default",
                                     fg_color="transparent", border_width=2,
