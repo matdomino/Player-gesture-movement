@@ -1,13 +1,16 @@
 {
-    "Walk": "w",
-    "Sprint": "shift",
-    "Go left": "a",
-    "Go right": "d",
-    "Jump": "space",
-    "l-index-up": "e",
-    "l-peace": "q",
-    "l-three-up": "1",
-    "l-four-up": "2",
-    "mouse-sensitivity": 50,
-    "pointer-refresh-rate": 240
+    "mouse": {
+        "mouse-sensitivity": 50,
+        "pointer-refresh-rate": 60
+    },
+    "keyboard": {
+        "Walk": "w",
+        "Go left": "a",
+        "Go right": "d",
+        "Jump": "space",
+        "l-index-up": "e",
+        "l-peace": "q",
+        "l-three-up": "1",
+        "l-four-up": "2"
+    }
 }

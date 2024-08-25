@@ -1,5 +1,5 @@
+0. Dodanie odczytania nowego konfigu w kodzie glownego watku i przekazanie tych wartosci do innych
 1. Zmiana ze klikanie i przytrzymanie przycisków myszki będzie zarządzane przez wątek od ruchu kursora - problem z dwoma kontrolerami myszki.
 2. Zmiana - jak jest zamknięta dłoń to resetuje ostatnią pozycje kursora.
 3. Zmiana jak sa sprawdzane przypadki gestów - przenieść do jednej funkcji.
 4. Dodanie wątku klawiatury
-5. Dodanie odświeżania do menu oraz do configu - oraz odczytywanie tych wartości w programie.

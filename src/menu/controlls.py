@@ -17,8 +17,10 @@ class ScrollableLabelButtonFrame(ctk.CTkScrollableFrame):
         button = ctk.CTkButton(self, text=value, width=100, height=24, fg_color="transparent",
                                 border_width=2,)
         button.configure(command=lambda: self.command(item, value))
-        label.grid(row=len(self.label_list), column=0, pady=(0, 10), sticky="w")
-        button.grid(row=len(self.button_list), column=1, pady=(0, 10), padx=5)
+
+        # Row incremented by 2 - pointer sensitivity and refresh rate is before keyboard binds
+        label.grid(row=len(self.label_list) + 2, column=0, pady=(0, 10), sticky="w")
+        button.grid(row=len(self.button_list) + 2, column=1, pady=(0, 10), padx=5)
         self.label_list.append(label)
         self.button_list.append(button)
 
@@ -31,16 +33,15 @@ def controlls_menu(menu_gui, root):
     controlls.pack(pady=0, padx=0, fil="both", expand=True)
 
     def close_controlls_cb():
+        menu_gui.config = read_config()
         menu_gui.open_menu(controlls, menu_gui, root)
 
     def restore_controls():
         restore_to_default()
-        menu_gui.config = read_config()
         close_controlls_cb()
 
     def save_current_config():
         save_config(new_config)
-        menu_gui.config = read_config()
         close_controlls_cb()
 
     def change_bind(item, value):
@@ -55,13 +56,18 @@ def controlls_menu(menu_gui, root):
                     button.configure(text=key_name)
                     button.configure(command=lambda: controls_list.command(item, key_name))
                     button.configure(fg_color="transparent")
-                    new_config[item] = key_name
+                    new_config["keyboard"][item] = key_name
 
                 break
 
     def slider_event(value):
         normalized_value = float(value) / 100
         sensitivity_val_label.configure(text=f"{normalized_value:.2f}")
+
+        new_config["mouse"]["mouse-sensitivity"] = round(value)
+
+    def change_refresh_rate(value):
+        new_config["mouse"]["pointer-refresh-rate"] = int(value)
 
     go_back = ctk.CTkButton(master=controlls, text="← Go back", fg_color="transparent",
                             border_width=2, command=close_controlls_cb)
@@ -76,17 +82,30 @@ def controlls_menu(menu_gui, root):
                                                 fg_color="transparent")
     controls_list.grid(row=0, column=2, padx=24, pady=100, sticky="nsew")
 
-    for key, val in new_config.items():
+    for key, val in new_config["keyboard"].items():
         controls_list.add_item(key, val)
 
     sensitivity_label = ctk.CTkLabel(master=controls_list, text="Mouse Sensitivity", anchor="w")
-    sensitivity_label.grid(row=len(controls_list.label_list) + 1, column=0, pady=(10, 0), padx=10, sticky="w")
+    sensitivity_label.grid(row=0, column=0, pady=(10, 0), padx=5, sticky="w")
 
     sensitivity_slider = ctk.CTkSlider(master=controls_list, from_=0, to=100, command=slider_event, width=140)
-    sensitivity_slider.grid(row=len(controls_list.label_list) + 1, column=1, pady=(10, 0), padx=(5, 0), sticky="ew")
+    sensitivity_slider.set(new_config["mouse"]["mouse-sensitivity"])
+    sensitivity_slider.grid(row=0, column=1, pady=(10, 0), sticky="ew")
 
     sensitivity_val_label = ctk.CTkLabel(master=controls_list, text=f"{(sensitivity_slider.get() / 100):.2f}", anchor="w")
-    sensitivity_val_label.grid(row=len(controls_list.label_list) + 1, column=2, pady=(10, 0), padx=(5, 10), sticky="w")
+    sensitivity_val_label.grid(row=0, column=2, pady=(10, 0), padx=(0, 10), sticky="w")
+
+    pointer_rate_label = ctk.CTkLabel(master=controls_list, text="Pointer Refresh Rate [Hz]", anchor="w")
+    pointer_rate_label.grid(row=1, column=0, pady=(10, 10), padx=5, sticky="w")
+
+    refresh_rate_option = ctk.CTkOptionMenu(master=controls_list,
+                                            values=["30", "60", "75", "85", "100", "120", "144", "165", "240", "360"],
+                                            command=change_refresh_rate)
+    refresh_rate_option.set(new_config["mouse"]["pointer-refresh-rate"])
+    refresh_rate_option.grid(row=1, column=1, pady=(10, 10), sticky="ew")
+
+    for key, val in new_config["keyboard"].items():
+        controls_list.add_item(key, val)
 
     restore_settings = ctk.CTkButton(master=controlls, text="Restore default",
                                     fg_color="transparent", border_width=2,
