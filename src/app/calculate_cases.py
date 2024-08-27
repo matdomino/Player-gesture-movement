@@ -17,7 +17,7 @@ def calculate_joint_angle(outer_joint_1, searched_joint, outer_joint_2):
     return np.degrees(angle)
 
 
-# Prawa reka aktywna jak prawy nadgarstek jest powyzej bioder i po prawej stronie głowy
+# Right hand active when right wrist is higher than hips and on the right side of the head
 def is_right_hand_active(right_wrist, left_hip, nose):
     if right_wrist.x < nose.x:
         if right_wrist.y < left_hip.y:
@@ -25,7 +25,7 @@ def is_right_hand_active(right_wrist, left_hip, nose):
 
     return False
 
-# Lewa reka aktywna jak lewy nadgarstek jest powyzej bioder i jest po lewej stronie głowy
+# Left hand active when left wrist is higher than hips and on the left side of the head
 def is_left_hand_active(left_wrist, right_hip, nose):
     if left_wrist.x > nose.x:
         if left_wrist.y < right_hip.y:
@@ -48,64 +48,100 @@ def is_leaning_left(nose, left_hip):
 
     return False
 
-def index_finger_up(hand):
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
+def open_palm(wrist, thumb_mcp, thump_tip, index_mcp, index_tip, middle_mcp, middle_tip, ring_mcp, ring_tip, pinky_mcp, pinky_tip):
+    if not calculate_joint_angle(wrist, thumb_mcp, thump_tip) > 160:
         return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) < 120:
+    if not calculate_joint_angle(wrist, index_mcp, index_tip) > 160:
         return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) < 120:
+    if not calculate_joint_angle(wrist, middle_mcp, middle_tip) > 160:
         return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) < 120:
+    if not calculate_joint_angle(wrist, ring_mcp, ring_tip) > 160:
         return False
-
-    return True
-
-def peace_sign(hand):
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
-        return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) > 160:
-        return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) < 120:
-        return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) < 120:
+    if not calculate_joint_angle(wrist, pinky_mcp, pinky_tip) > 160:
         return False
 
     return True
 
-def three_fingers_up(hand):
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
+def index_finger_up(wrist, index_mcp, index_tip, middle_mcp, middle_tip, ring_mcp, ring_tip, pinky_mcp, pinky_tip):
+    if not calculate_joint_angle(wrist, index_mcp, index_tip) > 160:
         return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) > 160:
+    if not calculate_joint_angle(wrist, middle_mcp, middle_tip) < 120:
         return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) > 160:
+    if not calculate_joint_angle(wrist, ring_mcp, ring_tip) < 120:
         return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) < 120:
-        return False
-
-    return True
-
-def four_fingers_up(hand):
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
-        return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) > 160:
-        return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) > 160:
-        return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) > 160:
+    if not calculate_joint_angle(wrist, pinky_mcp, pinky_tip) < 120:
         return False
 
     return True
 
-def open_palm(hand):
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[1], hand.landmark[4]) > 160:
+def peace_sign(wrist, index_mcp, index_tip, middle_mcp, middle_tip, ring_mcp, ring_tip, pinky_mcp, pinky_tip):
+    if not calculate_joint_angle(wrist, index_mcp, index_tip) > 160:
         return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[5], hand.landmark[8]) > 160:
+    if not calculate_joint_angle(wrist, middle_mcp, middle_tip) > 160:
         return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[9], hand.landmark[12]) > 160:
+    if not calculate_joint_angle(wrist, ring_mcp, ring_tip) < 120:
         return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[13], hand.landmark[16]) > 160:
-        return False
-    if not calculate_joint_angle(hand.landmark[0], hand.landmark[17], hand.landmark[20]) > 160:
+    if not calculate_joint_angle(wrist, pinky_mcp, pinky_tip) < 120:
         return False
 
     return True
+
+def three_fingers_up(wrist, index_mcp, index_tip, middle_mcp, middle_tip, ring_mcp, ring_tip, pinky_mcp, pinky_tip):
+    if not calculate_joint_angle(wrist, index_mcp, index_tip) > 160:
+        return False
+    if not calculate_joint_angle(wrist, middle_mcp, middle_tip) > 160:
+        return False
+    if not calculate_joint_angle(wrist, ring_mcp, ring_tip) > 160:
+        return False
+    if not calculate_joint_angle(wrist, pinky_mcp, pinky_tip) < 120:
+        return False
+
+    return True
+
+def four_fingers_up(wrist, index_mcp, index_tip, middle_mcp, middle_tip, ring_mcp, ring_tip, pinky_mcp, pinky_tip):
+    if not calculate_joint_angle(wrist, index_mcp, index_tip) > 160:
+        return False
+    if not calculate_joint_angle(wrist, middle_mcp, middle_tip) > 160:
+        return False
+    if not calculate_joint_angle(wrist, ring_mcp, ring_tip) > 160:
+        return False
+    if not calculate_joint_angle(wrist, pinky_mcp, pinky_tip) > 160:
+        return False
+
+    return True
+
+
+def calculate_gesture(hand):
+    wrist = hand.landmark[0]
+    thumb_mcp = hand.landmark[2]
+    thump_tip = hand.landmark[4]
+    index_mcp = hand.landmark[5]
+    index_tip = hand.landmark[8]
+    middle_mcp = hand.landmark[9]
+    middle_tip = hand.landmark[12]
+    ring_mcp = hand.landmark[13]
+    ring_tip = hand.landmark[16]
+    pinky_mcp = hand.landmark[17]
+    pinky_tip = hand.landmark[20]
+
+    if open_palm(wrist, thumb_mcp, thump_tip, index_mcp, index_tip, middle_mcp,
+                middle_tip, ring_mcp, ring_tip, pinky_mcp, pinky_tip):
+        return "open_palm"
+
+    if four_fingers_up(wrist, index_mcp, index_tip, middle_mcp, middle_tip,
+                ring_mcp, ring_tip, pinky_mcp, pinky_tip):
+        return "four_fingers_up"
+
+    if index_finger_up(wrist, index_mcp, index_tip, middle_mcp, middle_tip,
+                ring_mcp, ring_tip, pinky_mcp, pinky_tip):
+        return "index_finger_up"
+
+    if peace_sign(wrist, index_mcp, index_tip, middle_mcp, middle_tip,
+                ring_mcp, ring_tip, pinky_mcp, pinky_tip):
+        return "peace_sign"
+
+    if three_fingers_up(wrist, index_mcp, index_tip, middle_mcp, middle_tip,
+                ring_mcp, ring_tip, pinky_mcp, pinky_tip):
+        return "three_fingers_up"
+
+    return None
