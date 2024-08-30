@@ -1,6 +1,4 @@
-from pynput.mouse import Controller, Button
 import queue
-from .input_operations import single_mb_press, hold_mb, release_mb
 from .calculate_cases import index_finger_up, peace_sign, three_fingers_up, four_fingers_up, open_palm
 
 def clear_queue(queue, amount):
@@ -57,7 +55,7 @@ def segment_pointer_move(new_x, new_y, roughness_ratio, segments_queue):
 
     return roughness_ratio
 
-def calculate_pointer_move(coords, old_coords, segments_queue, sensitivity):
+def calculate_pointer_move(coords, old_coords, segments_queue, roughness_ratio, sensitivity):
     if old_coords != None:
         diff = (old_coords[0] - coords[0], old_coords[1] - coords[1])
         new_x = diff[0]
@@ -80,68 +78,38 @@ def calculate_pointer_move(coords, old_coords, segments_queue, sensitivity):
                 if roughness_ratio > 0:
                     roughness_ratio -= 1
 
-def release_last(last_option, mouse_controller):
-    if last_option == "peace_sign":
-        release_mb(Button.left, mouse_controller)
-        return
+    return roughness_ratio
 
-    if last_option == "four_fingers_up":
-        release_mb(Button.right, mouse_controller)
-        return
-
-def emulate_mouse(right_hand, old_landmarks, mouse_controller, last_mouse_option, segments_queue):
-    if open_palm(right_hand): # RUSZANIE KURSOREM
-        release_last(last_mouse_option, mouse_controller)
-
-        calculate_pointer_move((right_hand.landmark[0].x, right_hand.landmark[0].y), old_landmarks, segments_queue, 50)
-
-        return (right_hand.landmark[0].x, right_hand.landmark[0].y), None
-
-    if four_fingers_up(right_hand): # TRZYMANIE PRAWEGO PRZCISKU MYSZKI
-        if last_mouse_option == "peace_sign":
-            release_mb(Button.left, mouse_controller)
-
-        calculate_pointer_move((right_hand.landmark[0].x, right_hand.landmark[0].y), old_landmarks, segments_queue, 50)
-        hold_mb(Button.right, mouse_controller, last_mouse_option=="four_fingers_up")
-
-        return (right_hand.landmark[0].x, right_hand.landmark[0].y), "four_fingers_up"
-
-    if index_finger_up(right_hand): # POJEDYNCZO LEWY
-        release_last(last_mouse_option, mouse_controller)
-        single_mb_press(Button.left, mouse_controller, last_mouse_option == "index_finger_up")
-        return (right_hand.landmark[0].x, right_hand.landmark[0].y), "index_finger_up"
-
-    if peace_sign(right_hand): # TRZYMANIE LEWEGO PRZYCISKU MYSZKI
-        if last_mouse_option == "four_fingers_up":
-            release_mb(Button.right, mouse_controller)
-
-        calculate_pointer_move((right_hand.landmark[0].x, right_hand.landmark[0].y), old_landmarks, segments_queue, 50)
-        hold_mb(Button.left, mouse_controller, last_mouse_option=="peace_sign")
-
-        return (right_hand.landmark[0].x, right_hand.landmark[0].y), "peace_sign"
-
-    if three_fingers_up(right_hand): # POJEDYNCZO PRAWY
-        release_last(last_mouse_option, mouse_controller)
-        single_mb_press(Button.right, mouse_controller, last_mouse_option == "three_fingers_up")
-        return (right_hand.landmark[0].x, right_hand.landmark[0].y), "three_fingers_up"
+def emulate_mouse(segments_queue, right_hand, old_landmarks, last_mouse_option, sensitivity):
 
     return None, last_mouse_option
 
-def run_mouse_emulation(mouse_landmarks_queue, segments_queue, exit_event):
-    mouse_controller = Controller()
+def run_mouse_emulation(mouse_landmarks_queue, segments_queue, mouse_config, exit_event):
     old_landmarks = None
     last_mouse_option = None
+    roughness_ratio = 0
+    loop_iterator = 0
+
+    frame_rate = mouse_config.get('pointer-refresh-rate')
+    queue_limit = frame_rate * 2
 
     while not exit_event.is_set():
         try:
             landmarks = mouse_landmarks_queue.get(timeout=1)
-            landmarks_tmp, last_mouse_option = emulate_mouse(landmarks, old_landmarks, mouse_controller, last_mouse_option, segments_queue)
+            landmarks_tmp, last_mouse_option = emulate_mouse(segments_queue, landmarks,
+                        old_landmarks, last_mouse_option, mouse_config.get('mouse-sensitivity'))
 
             if landmarks_tmp is not None:
                 old_landmarks = landmarks_tmp
 
+            if loop_iterator % 100 == 0:
+                loop_iterator = 0
+                if segments_queue.qsize() > queue_limit:
+                    clear_queue(segments_queue, queue_limit)
+                    roughness_ratio += 1
+                else:
+                    if roughness_ratio > 0:
+                        roughness_ratio -= 1
+
         except queue.Empty:
             pass
-
-    release_mb(Button.left, mouse_controller)
-    release_mb(Button.right, mouse_controller)

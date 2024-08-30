@@ -1,7 +1,7 @@
 {
     "mouse": {
         "mouse-sensitivity": 50,
-        "pointer-refresh-rate": 60
+        "pointer-refresh-rate": 240
     },
     "keyboard": {
         "Walk": "w",

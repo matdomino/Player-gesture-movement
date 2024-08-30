@@ -23,13 +23,11 @@ def pose_detection():
     mp_hands = mp.solutions.hands
     cap = cv2.VideoCapture(0)
 
-    t_mouse = threading.Thread(target=run_mouse_emulation, args=(mouse_landmarks_queue, segments_queue, exit_event))
-    t_pointer = threading.Thread(target=pointer_movement_handler, args=(segments_queue, exit_event))
+    t_mouse = threading.Thread(target=run_mouse_emulation, args=(mouse_landmarks_queue, segments_queue, binds_config.get('mouse'), exit_event))
+    t_pointer = threading.Thread(target=pointer_movement_handler, args=(segments_queue, binds_config.get('mouse').get('pointer-refresh-rate'), exit_event))
 
     t_mouse.start()
     t_pointer.start()
-
-    # USUNAC POZNIEJ
 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose, mp_hands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_hands=2) as hands:
         while cap.isOpened() and not exit_event.is_set():
