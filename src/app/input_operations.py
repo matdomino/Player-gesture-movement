@@ -11,9 +11,8 @@ def single_key_press(key, is_pressed):
         keyDown(key)
         keyUp(key)
 
-def hold_mb(mb, mouse_controller, isPressed):
-    if not isPressed:
-        mouse_controller.press(mb)
+def hold_mb(mb, mouse_controller):
+    mouse_controller.press(mb)
 
 def release_mb(mb, mouse_controller):
     mouse_controller.release(mb)

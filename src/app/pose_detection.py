@@ -4,7 +4,7 @@ import threading
 import queue
 from .config_handler import read_config
 from .mouse_handler import run_mouse_emulation
-from .pointer_movement import pointer_movement_handler
+from .pointer_handler import pointer_movement_handler
 
 mouse_landmarks_queue = queue.Queue()
 pointer_queue = queue.Queue()

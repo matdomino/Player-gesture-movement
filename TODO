@@ -1,3 +1,2 @@
 1. Zmiana ze klikanie i przytrzymanie przycisków myszki będzie zarządzane przez wątek od ruchu kursora - problem z dwoma kontrolerami myszki.
-2. Zmiana - jak jest zamknięta dłoń to resetuje ostatnią pozycje kursora.
 4. Dodanie wątku klawiatury
