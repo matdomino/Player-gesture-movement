@@ -18,13 +18,9 @@ def pointer_movement_handler(segments_queue, frame_rate, exit_event):
     while not exit_event.is_set():
         try:
             next_action = segments_queue.get(timeout=1)
-            print(next_action)
             action = next_action[2]
 
-            # FUNKCJE MYSZKI
-            if action is not None and (
-                action != last_mouse_action or action not in ["l_hold", "r_hold"]
-            ):
+            if action != last_mouse_action:
                 if last_mouse_action in ('r_hold', 'l_hold'):
                     release_mb(action_buttons[last_mouse_action], mouse_controller)
 
@@ -36,7 +32,7 @@ def pointer_movement_handler(segments_queue, frame_rate, exit_event):
 
                 if action == "l_single":
                     single_mb_press(Button.left, mouse_controller, last_mouse_action==action)
-                
+
                 if action == "r_single":
                     single_mb_press(Button.right, mouse_controller, last_mouse_action==action)
 
@@ -44,13 +40,10 @@ def pointer_movement_handler(segments_queue, frame_rate, exit_event):
                 pygame.time.delay(time_interval)
                 continue
 
-            # BRAK ROZPOZNANEGO GESTU
-            if next_action[0] is None and action is None:
-                last_mouse_action = None
+            if next_action[0] is not None:
+                mouse_controller.move(next_action[0], next_action[1])
 
-            # RUSZANIE MYSZKI
-            mouse_controller.move(next_action[0], next_action[1])
-
+            last_mouse_action = action
             pygame.time.delay(time_interval)
 
         except queue.Empty:
@@ -59,5 +52,3 @@ def pointer_movement_handler(segments_queue, frame_rate, exit_event):
     pygame.quit()
     release_mb(Button.left, mouse_controller)
     release_mb(Button.right, mouse_controller)
-
-

@@ -6,14 +6,11 @@ def clear_queue(queue, amount):
         if not queue.empty():
             queue.get()
 
-def add_to_pointer_queue(new_x, new_y, action, roughness_ratio, segments_queue):
+def add_to_pointer_queue(move_vector, action, roughness_ratio, segments_queue):
+    new_x = move_vector[0]
+    new_y = move_vector[1]
     x_segment = 0
     y_segment = 0
-
-    if new_x is None:
-        segments_queue.put((None, None, action))
-
-        return
 
     if new_x >= 0:
         x_segment = new_x // (10 - roughness_ratio) if new_x >= (10 - roughness_ratio) else 1
@@ -32,7 +29,7 @@ def add_to_pointer_queue(new_x, new_y, action, roughness_ratio, segments_queue):
         y_segment_abs = abs(y_segment)
 
         if new_x_abs >= x_segment_abs and new_y_abs >= y_segment:
-            segments_queue.put((x_segment, y_segment, None))
+            segments_queue.put((x_segment, y_segment, action))
 
             new_x_abs -= x_segment_abs
             new_y_abs -= y_segment_abs
@@ -40,9 +37,9 @@ def add_to_pointer_queue(new_x, new_y, action, roughness_ratio, segments_queue):
 
         if new_x_abs >= x_segment_abs and new_y_abs <= y_segment_abs:
             if new_y_abs > 0:
-                segments_queue.put((x_segment, new_y, None))
+                segments_queue.put((x_segment, new_y, action))
             else:
-                segments_queue.put((x_segment, 0, None))
+                segments_queue.put((x_segment, 0, action))
 
             new_x_abs -= x_segment_abs
             new_y_abs = 0
@@ -50,27 +47,29 @@ def add_to_pointer_queue(new_x, new_y, action, roughness_ratio, segments_queue):
 
         if new_x_abs <= x_segment_abs and new_y_abs >= y_segment_abs:
             if new_x_abs > 0:
-                segments_queue.put((new_x, y_segment, None))
+                segments_queue.put((new_x, y_segment, action))
             else:
-                segments_queue.put((0, y_segment, None))
+                segments_queue.put((0, y_segment, action))
 
             new_y_abs -= y_segment_abs
             new_x_abs = 0
             continue
 
 def calculate_pointer_move(coords, old_coords, sensitivity):
-    if old_coords is not None:
-        diff = (old_coords[0] - coords[0], old_coords[1] - coords[1])
-        new_x = diff[0]
-        new_y = diff[1]
+    if old_coords[0] is None:
+        return ((coords[0], coords[1]), (None, None))
 
-        if abs(new_x) > 0.005 or abs(new_y) > 0.005:
-            new_x = int(new_x * 100 * sensitivity)
-            new_y = int(new_y * 100 * sensitivity * -1)
+    diff = (old_coords[0] - coords[0], old_coords[1] - coords[1])
+    move_x = diff[0]
+    move_y = diff[1]
 
-            return new_x, new_y
+    if abs(move_x) > 0.005 or abs(move_y) > 0.005:
+        move_x = int(move_x * 100 * sensitivity)
+        move_y = int(move_y * 100 * sensitivity * -1)
 
-    return None, None
+        return ((coords[0], coords[1]), (move_x, move_y))
+
+    return ((coords[0], coords[1]), (None, None))
 
 mouse_actions = {
     None: None,
@@ -85,24 +84,22 @@ def emulate_mouse(segments_queue, right_hand, old_landmarks, roughness_ratio, se
     gesture = calculate_gesture(right_hand)
     action = mouse_actions[gesture]
 
-    curr_x, curr_y = calculate_pointer_move((right_hand.landmark[0].x, right_hand.landmark[0].y),
+    current_pos, move_vector = calculate_pointer_move((right_hand.landmark[0].x, right_hand.landmark[0].y),
                                             old_landmarks, sensitivity)
 
-    if gesture in ('peace_sign', 'four_fingers_up', 'open_palm'):
-        add_to_pointer_queue(curr_x, curr_y, action, roughness_ratio, segments_queue)
-    else:
-        add_to_pointer_queue(None, None, action, roughness_ratio, segments_queue)
+    if action in ["index_finger_up", "three_fingers_up"]:
+        segments_queue.put((None, None, action))
+
+    if current_pos[0] is not None and move_vector[0] is not None:
+        add_to_pointer_queue(move_vector, action, roughness_ratio, segments_queue)
 
     if gesture is None:
-        return None
+        return (None, None)
 
-    if curr_x is not None:
-        return (curr_x, curr_y)
-
-    return (right_hand.landmark[0].x, right_hand.landmark[0].y)
+    return current_pos
 
 def run_mouse_emulation(mouse_landmarks_queue, segments_queue, mouse_config, exit_event):
-    old_landmarks = None
+    old_landmarks = (None, None)
     roughness_ratio = 0
     loop_iterator = 0
 
