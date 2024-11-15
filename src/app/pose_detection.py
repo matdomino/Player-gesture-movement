@@ -5,14 +5,17 @@ import queue
 from .config_handler import read_config
 from .mouse_handler import run_mouse_emulation
 from .pointer_handler import pointer_movement_handler
+from .keyboard_emulator import run_keyboard_emulation
 
 mouse_landmarks_queue = queue.Queue()
+keyboard_landmarks_queue = queue.Queue()
 pointer_queue = queue.Queue()
 exit_event = threading.Event()
 segments_queue = queue.Queue()
 
 def pose_detection():
     global mouse_landmarks_queue
+    global keyboard_landmarks_queue
     global exit_event
     global segments_queue
 
@@ -25,9 +28,11 @@ def pose_detection():
 
     t_mouse = threading.Thread(target=run_mouse_emulation, args=(mouse_landmarks_queue, segments_queue, binds_config.get('mouse'), exit_event))
     t_pointer = threading.Thread(target=pointer_movement_handler, args=(segments_queue, binds_config.get('mouse').get('pointer-refresh-rate'), exit_event))
+    t_keyboard = threading.Thread(target=run_keyboard_emulation, args=(keyboard_landmarks_queue, binds_config.get('keyboard'), cap.get(cv2.CAP_PROP_FPS), exit_event))
 
     t_mouse.start()
     t_pointer.start()
+    t_keyboard.start()
 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose, mp_hands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_hands=2) as hands:
         while cap.isOpened() and not exit_event.is_set():
@@ -53,10 +58,8 @@ def pose_detection():
                     if right_hand.landmark[0].x > left_hand.landmark[0].x:
                         right_hand, left_hand = left_hand, right_hand
 
-                    # TUTAJ DAC DODAWANIE DO KOLEJKI WATKOW
                     mouse_landmarks_queue.put(right_hand)
-
-                    # emulate_keyboard(landmarks_body, left_hand)
+                    keyboard_landmarks_queue.put((left_hand, landmarks_body))
 
             except:
                 pass

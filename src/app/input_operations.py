@@ -6,10 +6,9 @@ def hold_key(key):
 def release_key(key):
     keyUp(key)
 
-def single_key_press(key, is_pressed):
-    if not is_pressed:
-        keyDown(key)
-        keyUp(key)
+def single_key_press(key):
+    keyDown(key)
+    keyUp(key)
 
 def hold_mb(mb, mouse_controller):
     mouse_controller.press(mb)
