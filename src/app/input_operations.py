@@ -1,14 +1,12 @@
-from pyautogui import keyUp, keyDown
+def hold_key(key, keyboard_controller):
+    keyboard_controller.press(key)
 
-def hold_key(key):
-    keyDown(key)
+def release_key(key, keyboard_controller):
+    keyboard_controller.release(key)
 
-def release_key(key):
-    keyUp(key)
-
-def single_key_press(key):
-    keyDown(key)
-    keyUp(key)
+def single_key_press(key, keyboard_controller):
+    keyboard_controller.press(key)
+    keyboard_controller.release(key)
 
 def hold_mb(mb, mouse_controller):
     mouse_controller.press(mb)

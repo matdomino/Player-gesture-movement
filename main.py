@@ -10,6 +10,4 @@ def main():
         return
 
 if __name__ == "__main__":
-    #main()
-
-    pose_detection()
+    main()

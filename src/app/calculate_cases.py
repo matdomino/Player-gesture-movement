@@ -12,40 +12,27 @@ def calculate_joint_angle(outer_joint_1, searched_joint, outer_joint_2):
     vector_2 /= np.linalg.norm(vector_2)
 
     dot_product = np.dot(vector_1, vector_2)
-    angle = np.arccos(dot_product)
+    angle = np.arccos(np.clip(dot_product, -1.0, 1.0))
 
     return np.degrees(angle)
 
-
-# Right hand active when right wrist is higher than hips and on the right side of the head
 def is_right_hand_active(right_wrist, left_hip, nose):
-    if right_wrist.x < nose.x:
-        if right_wrist.y < left_hip.y:
-            return True
+    if right_wrist.x < nose.x and right_wrist.y < left_hip.y:
+        return True
 
     return False
 
-# Left hand active when left wrist is higher than hips and on the left side of the head
 def is_left_hand_active(left_wrist, right_hip, nose):
-    if left_wrist.x > nose.x:
-        if left_wrist.y < right_hip.y:
-            return True
+    if left_wrist.x > nose.x and left_wrist.y < right_hip.y:
+        return True
 
     return False
 
-def is_walking():
-    return False
-
-def is_leaning_right(nose, right_hip):
+def is_leaning(right_hip, left_hip, nose):
     if nose.x < right_hip.x:
-        return True
-
-    return False
-
-def is_leaning_left(nose, left_hip):
+        return "right"
     if nose.x > left_hip.x:
-        return True
-
+        return "left"
     return False
 
 def open_palm(wrist, thumb_mcp, thump_tip, index_mcp, index_tip, middle_mcp, middle_tip, ring_mcp, ring_tip, pinky_mcp, pinky_tip):

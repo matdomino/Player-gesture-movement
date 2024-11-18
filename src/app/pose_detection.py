@@ -45,7 +45,7 @@ def pose_detection():
             results_hands = hands.process(image)
 
             image.flags.writeable = True
-            # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR) // Tylko wizualnie kamera ma dobre kolory - pytanie czy to potrzebne
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
             try:
                 landmarks_hands = results_hands.multi_hand_landmarks
