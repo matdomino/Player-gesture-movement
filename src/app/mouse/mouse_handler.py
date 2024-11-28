@@ -1,12 +1,36 @@
 import queue
-from .calculate_cases import calculate_gesture
+from ..gestures.hand_gestures import calculate_gesture
 
-def clear_queue(queue, amount):
+def clear_queue(queue, amount) -> None:
+    """
+    Clears a specified number of elements from the queue.
+
+        Parameters:
+            - queue(queue.Queue): Specified queue from which elements will be removed.
+            - amount(int): number of elements to remove.
+
+        Returns:
+            - None
+    """
+
     for _ in range(amount):
         if not queue.empty():
             queue.get()
 
-def add_to_pointer_queue(move_vector, action, roughness_ratio, segments_queue):
+def add_to_pointer_queue(move_vector, action, roughness_ratio, segments_queue) -> None:
+    """
+    Divides the move vector into smaller ones and adds them to the segments_queue.
+
+        Parameters:
+            - move_vector (tuple (int, int)): The new move vector to divide.
+            - action (None | str): Pointer action.
+            - roughness_ratio(int): Factor used to reduce the number of segments.
+            - segments_queue(queue.Queue): Segments queue for pointer emulation.
+
+        Returns:
+            - None
+    """
+
     new_x = move_vector[0]
     new_y = move_vector[1]
     x_segment = 0
@@ -55,7 +79,20 @@ def add_to_pointer_queue(move_vector, action, roughness_ratio, segments_queue):
             new_x_abs = 0
             continue
 
-def calculate_pointer_move(coords, old_coords, sensitivity):
+def calculate_pointer_move(coords, old_coords, sensitivity) -> tuple[tuple[float, float], tuple[int, int] | tuple[None, None]]:
+    """
+    Calculates pointer movement if the x or y coordinate deviation exceeds 0.5%.
+
+        Parameters:
+            - coords (tuple (int, int)): New iteration's right hand coordinates.
+            - old_coords (tuple (int, int)): Coordinates from the previous iteration.
+            - sensitivity(int): A factor used to scale the move vector.
+
+        Returns:
+            - current_position (int, int): Right hand position.
+            - move_vector(int, int | None, None): Pointer movement vector.
+    """
+
     if old_coords[0] is None:
         return ((coords[0], coords[1]), (None, None))
 
@@ -80,7 +117,21 @@ mouse_actions = {
     "three_fingers_up": "r_single"
 }
 
-def emulate_mouse(segments_queue, right_hand, old_landmarks, roughness_ratio, sensitivity):
+def emulate_mouse(segments_queue, right_hand, old_landmarks, roughness_ratio, sensitivity) -> tuple[int, int] | tuple[None, None]:
+    """
+    Runs calculate_gesture, calculate_pointer_move and add_to_pointer_queue functions.
+
+        Parameters:
+            - segments_queue (queue.Queue): Pointer segments queue.
+            - right_hand (RepeatedCompositeFieldContainer): Right hand landmarks.
+            - old_landmarks (int, int): Right hand coordinates from the previous iteration.
+            - roughness_ratio(int): Factor used to reduce the number of segments. 
+            - sensitivity(int): A factor used to scale the move vector.
+
+        Returns:
+            - current_position (int, int): Right hand position.
+    """
+
     gesture = calculate_gesture(right_hand)
     action = mouse_actions[gesture]
 
@@ -98,7 +149,20 @@ def emulate_mouse(segments_queue, right_hand, old_landmarks, roughness_ratio, se
 
     return current_pos
 
-def run_mouse_emulation(mouse_landmarks_queue, segments_queue, mouse_config, exit_event):
+def run_mouse_emulation(mouse_landmarks_queue, segments_queue, mouse_config, exit_event) -> None:
+    """
+    Main process for the emulation thread, responsible for performing calculations and adding items to the segments_queue.
+
+        Parameters:
+            - mouse_landmarks_queue (queue.Queue): Queue containing right hand landmarks.
+            - segments_queue (queue.Queue): Queue containing pointer actions and movement vectors.
+            - mouse_config (dict): Pointer refresh rate and sensitivity configuration.
+            - exit_event (threading.Event): Exit event flag to stop the aplication.
+
+        Returns:
+            - None
+    """
+
     old_landmarks = (None, None)
     roughness_ratio = 0
     loop_iterator = 0

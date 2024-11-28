@@ -1,10 +1,23 @@
 import queue
 from collections import deque
-from .calculate_cases import calculate_gesture, calculate_joint_angle, is_left_hand_active, is_leaning
-from .input_operations import hold_key, release_key, single_key_press
+from ..gestures.joint_angle import calculate_joint_angle
+from ..gestures.hand_gestures import calculate_gesture
+from ..gestures.body_gestures import is_left_hand_active, is_leaning
+from .keyboard_input import hold_key, release_key, single_key_press
 from pynput.keyboard import Controller, Key
 
-def left_hand_single_action(gesture, last_hand_gesture, k_config, k_controller):
+def left_hand_single_action(gesture, last_hand_gesture, k_config, k_controller) -> str | None:
+    """
+    Clears a specified number of elements from the queue.
+
+        Parameters:
+            - queue(queue.Queue): Specified queue from which elements will be removed.
+            - amount(int): number of elements to remove.
+
+        Returns:
+            - None
+    """
+
     if gesture == last_hand_gesture:
         return
 
@@ -20,7 +33,21 @@ def left_hand_single_action(gesture, last_hand_gesture, k_config, k_controller):
         case _:
             return
 
-def walk(body_landmarks, walking_history_queue, walking_queue_length, k_config, k_controller):
+def walk(body_landmarks, walking_history_queue, walking_queue_length, k_config, k_controller) -> None:
+    """
+    Emulates a walking function for half a second when the knee angle is less than 110 degrees.
+
+        Parameters:
+            - body_landmarks(RepeatedCompositeFieldContainer): Predicted body landmarks.
+            - walking_history_queue(deque): Queue used to emulate walking function for half a second.
+            - walking_queue_length(int): Length of the walking queue, based on camera's fps.
+            - k_config(dict): Keybinds configuration.
+            - k_controller(Controller): Keyboard controller (Pynput).
+
+        Returns:
+            - None
+    """
+
     if (calculate_joint_angle(body_landmarks[26], body_landmarks[24], body_landmarks[12]) < 110 or
         calculate_joint_angle(body_landmarks[25], body_landmarks[23], body_landmarks[11]) < 110):
 
@@ -34,7 +61,19 @@ def walk(body_landmarks, walking_history_queue, walking_queue_length, k_config, 
         release_key(k_config['Walk'], k_controller)
 
 # ZMIENIC PO DODANIU MAPOWANIA KONFIGU
-def jump(body_landmarks, k_config, k_controller):
+def jump(body_landmarks, k_config, k_controller) -> None:
+    """
+    Emulates a jumping function when the knee angle of both legs is less than 90 degrees.
+
+        Parameters:
+            - body_landmarks(RepeatedCompositeFieldContainer): Predicted body landmarks.
+            - k_config(dict): Keybinds configuration.
+            - k_controller(Controller): Keyboard controller (Pynput).
+
+        Returns:
+            - None
+    """
+
     if (calculate_joint_angle(body_landmarks[26], body_landmarks[24], body_landmarks[12]) < 90 and
         calculate_joint_angle(body_landmarks[25], body_landmarks[23], body_landmarks[11]) < 90):
         if k_config["Jump"] == "space":
@@ -44,7 +83,20 @@ def jump(body_landmarks, k_config, k_controller):
         single_key_press(k_config["Jump"], k_controller)
 
 # ZMIENIC PO DODANIU MAPOWANIA KONFIGU
-def sprint(hand_gesture, is_sprinting, k_config, k_controller):
+def sprint(hand_gesture, is_sprinting, k_config, k_controller) -> bool:
+    """
+    Emulates a sprinting function when the left hand gesture is "open_palm".
+
+        Parameters:
+            - hand_gesture(str): Prediction od the left hand gesture.
+            - is_sprinting(bool): Previous iteration's sprinting status.
+            - k_config(dict): Keybinds configuration.
+            - k_controller(Controller): Keyboard controller (Pynput).
+
+        Returns:
+            - None
+    """
+
     if hand_gesture == "open_palm":
         if is_sprinting is False:
             hold_key(Key.ctrl, k_controller)
@@ -56,8 +108,24 @@ def sprint(hand_gesture, is_sprinting, k_config, k_controller):
 
     return False
 
-def walk_sideways(body_landmarks, was_leaning, k_config, k_controller):
+def walk_sideways(body_landmarks, was_leaning, k_config, k_controller) -> str | bool:
+    """
+    Emulates a walking sideways function when the head is leaning left or right beyond the hip.
+
+        Parameters:
+            - body_landmarks(RepeatedCompositeFieldContainer): Predicted body landmarks.
+            - was_leaning(str | bool): The previous leaning status from the last iteration.
+            - k_config(dict): Keybinds configuration.
+            - k_controller(Controller): Keyboard controller (Pynput).
+
+        Returns:
+            - None
+    """
+
     leaning_status = is_leaning(body_landmarks[24], body_landmarks[23], body_landmarks[0])
+
+    if not leaning_status:
+        return False
 
     if leaning_status == was_leaning:
         return was_leaning
@@ -73,14 +141,21 @@ def walk_sideways(body_landmarks, was_leaning, k_config, k_controller):
                 release_key(k_config["Go right"], k_controller)
             hold_key(k_config["Go left"], k_controller)
             return "left"
-        case False:
-            if was_leaning == "left":
-                release_key(k_config["Go left"], k_controller)
-                return False
-            release_key(k_config["Go left"], k_controller)
-            return False
 
-def run_keyboard_emulation(keyboard_landmarks_queue, k_config, camera_fps, exit_event):
+def run_keyboard_emulation(keyboard_landmarks_queue, k_config, camera_fps, exit_event) -> None:
+    """
+    Main process for the emulation thread, responsible for running keyboard emulation.
+
+        Parameters:
+            - keyboard_landmarks_queue(queue.Queue): Queue for body landmarks.
+            - k_config(dict): Keybinds configuration.
+            - camera_fps(float): Camera's fps.
+            - exit_event(threading.Event): Exit event flag to stop the aplication.
+
+        Returns:
+            - None
+    """
+
     # DODAC TUTAJ FUNKCJE DO MAPOWANIA CONFIGU, ZEBY JESLI JEST ZNAK SPACJALNY ZMIENILA GO NA OBIEKT KEY
 
     k_controller = Controller()

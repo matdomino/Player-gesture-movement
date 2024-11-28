@@ -1,14 +1,26 @@
 import queue
 import pygame
 from pynput.mouse import Controller, Button
-from .input_operations import single_mb_press, hold_mb, release_mb
+from .mouse_input import single_mb_press, hold_mb, release_mb
 
 action_buttons = {
     "r_hold": Button.right,
     "l_hold": Button.left
 }
 
-def pointer_movement_handler(segments_queue, frame_rate, exit_event):
+def pointer_movement_handler(segments_queue, frame_rate, exit_event) -> None:
+    """
+    Main process for the pointer thread, responsible for emulating mouse buttons and pointer movement.
+
+        Parameters:
+            - segments_queue (queue.Queue): Queue containing pointer actions and movement vectors.
+            - frame_rate (int): Frame rate that determines the intervals for mouse emulation.
+            - exit_event (threading.Event): Exit event flag to stop the aplication.
+
+        Returns:
+            - None
+    """
+
     time_interval = int(1000/frame_rate)
     mouse_controller = Controller()
     pygame.init()

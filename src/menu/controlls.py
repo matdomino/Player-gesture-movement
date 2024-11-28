@@ -18,7 +18,6 @@ class ScrollableLabelButtonFrame(ctk.CTkScrollableFrame):
                                 border_width=2,)
         button.configure(command=lambda: self.command(item, value))
 
-        # Row incremented by 2 - pointer sensitivity and refresh rate is before keyboard binds
         label.grid(row=len(self.label_list) + 2, column=0, pady=(0, 10), sticky="w")
         button.grid(row=len(self.button_list) + 2, column=1, pady=(0, 10), padx=5)
         self.label_list.append(label)

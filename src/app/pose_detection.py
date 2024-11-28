@@ -2,10 +2,10 @@ import cv2
 import mediapipe as mp
 import threading
 import queue
-from .config_handler import read_config
-from .mouse_handler import run_mouse_emulation
-from .pointer_handler import pointer_movement_handler
-from .keyboard_emulator import run_keyboard_emulation
+from .config.config_handler import read_config
+from .mouse.mouse_handler import run_mouse_emulation
+from .mouse.pointer_handler import pointer_movement_handler
+from .keyboard.keyboard_emulator import run_keyboard_emulation
 
 mouse_landmarks_queue = queue.Queue()
 keyboard_landmarks_queue = queue.Queue()
@@ -13,7 +13,18 @@ pointer_queue = queue.Queue()
 exit_event = threading.Event()
 segments_queue = queue.Queue()
 
-def pose_detection():
+def pose_detection() -> None:
+    """
+    Main process of the application. Starts other threads, runs predictions for body and hand landmarks, 
+    and adds them to the landmarks queues.
+
+        Parameters:
+            - None
+
+        Returns:
+            - None
+    """
+
     global mouse_landmarks_queue
     global keyboard_landmarks_queue
     global exit_event
