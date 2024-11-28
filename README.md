@@ -9,7 +9,11 @@
 ## Introduction
 A multi-threaded, webcam-based game controller that utilizes body and hand gestures to seamlessly emulate keyboard and mouse functionality.
 
-<iframe width="512" height="288" src="https://www.youtube.com/embed/IIvClNtovDs" title="Webcam controller demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[![Demo](https://i.ytimg.com/vi/IIvClNtovDs/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGUgZCg1MA8=&rs=AOn4CLCT_Ceme8Qy61T_AvFiOXoRj0IlPQ&quot)](https://www.youtube.com/watch?v=IIvClNtovDs)
+<div align="center">
+    Video: A demo of the application.
+</div>
+
 
 ### Used technology:
 - Python,
